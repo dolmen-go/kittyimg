@@ -4,6 +4,7 @@ import (
 	"embed"
 	"image"
 	"os"
+	"testing"
 
 	// Plugin to decode GIF
 	_ "image/gif"
@@ -27,4 +28,8 @@ func Example() {
 	}
 
 	kittyimg.Fprintln(os.Stdout, img)
+}
+
+func TestExample(*testing.T) {
+	Example()
 }
