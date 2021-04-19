@@ -1,6 +1,7 @@
 package kittyimg_test
 
 import (
+	"embed"
 	"image"
 	"os"
 
@@ -10,8 +11,11 @@ import (
 	"github.com/dolmen-go/kittyimg"
 )
 
+//go:embed dolmen.gif
+var files embed.FS
+
 func Example() {
-	f, err := os.Open("dolmen.gif")
+	f, err := files.Open("dolmen.gif")
 	if err != nil {
 		panic(err)
 	}
