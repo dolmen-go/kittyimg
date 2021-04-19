@@ -21,38 +21,39 @@ type streamPayload struct {
 	w      io.Writer
 }
 
-func (pw *streamPayload) Reset(w io.Writer) {
-	pw.w = w
-	pw.n = 0
+func (spw *streamPayload) Reset(w io.Writer) {
+	spw.w = w
+	spw.n = 0
 }
 
-func (pw *streamPayload) encode() error {
+func (spw *streamPayload) encode() error {
 	// fmt.Fprintln(os.Stderr, len(bufRaw), "=>", (len(bufRaw)+2)/3*4)
 
-	base64.StdEncoding.Encode(pw.bufEnc[:], pw.bufRaw[:pw.n])
-	_, err := pw.w.Write(pw.bufEnc[:(pw.n+2)/3*4])
-	pw.n = 0
+	base64.StdEncoding.Encode(spw.bufEnc[:], spw.bufRaw[:spw.n])
+	_, err := spw.w.Write(spw.bufEnc[:(spw.n+2)/3*4])
+	spw.n = 0
 	return err
 }
 
-func (pw *streamPayload) Write(b []byte) (n int, err error) {
+func (spw *streamPayload) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
-		if pw.n == cap(pw.bufRaw) {
-			_, err = pw.w.Write([]byte("m=1;"))
+		if spw.n == cap(spw.bufRaw) {
+			_, err = spw.w.Write([]byte("m=1;"))
 			if err != nil {
 				return
 			}
-			err = pw.encode()
+			err = spw.encode()
 			if err != nil {
 				return
 			}
-			_, err = pw.w.Write([]byte("\033\\\033_G"))
+			_, err = spw.w.Write([]byte("\033\\\033_G"))
 			if err != nil {
 				return
 			}
 		}
-		l := copy(pw.bufRaw[pw.n:], b)
-		pw.n += l
+
+		l := copy(spw.bufRaw[spw.n:], b)
+		spw.n += l
 		n += l
 		b = b[l:]
 	}
@@ -60,20 +61,20 @@ func (pw *streamPayload) Write(b []byte) (n int, err error) {
 }
 
 // Close closes the Writer, flushing any unwritten data to the underlying io.Writer, but does not close the underlying io.Writer.
-func (pw *streamPayload) Close() (err error) {
-	if pw.n == 0 {
-		_, err = pw.w.Write([]byte("m=0;\033\\"))
+func (spw *streamPayload) Close() (err error) {
+	if spw.n == 0 {
+		_, err = spw.w.Write([]byte("m=0;\033\\"))
 		return
 	}
-	_, err = pw.w.Write([]byte("m=0;"))
+	_, err = spw.w.Write([]byte("m=0;"))
 	if err != nil {
 		return
 	}
-	err = pw.encode()
+	err = spw.encode()
 	if err != nil {
 		return
 	}
-	_, err = pw.w.Write([]byte("\033\\"))
+	_, err = spw.w.Write([]byte("\033\\"))
 	return
 }
 
@@ -87,7 +88,7 @@ type zlibPayload struct {
 }
 
 func (zp *zlibPayload) Reset(w io.Writer) {
-	w.Write([]byte("o=z,"))
+	_, _ = w.Write([]byte("o=z,"))
 	zp.spw.Reset(w)
 	zp.zw = zlib.NewWriter(&zp.spw)
 	zp.n = 0
