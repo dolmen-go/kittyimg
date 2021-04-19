@@ -15,6 +15,8 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+
+	"github.com/dolmen-go/kittyimg"
 )
 
 func main() {
@@ -33,8 +35,13 @@ func _main() error {
 			return fmt.Errorf("%s: %w", file, err)
 		}
 
-		icat(os.Stdout, img)
-		fmt.Println()
+		// icat(os.Stdout, img)
+		// fmt.Println()
+
+		err = kittyimg.Fprintln(os.Stdout, img)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
