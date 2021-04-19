@@ -17,6 +17,7 @@ import (
 	_ "image/png"
 
 	"github.com/dolmen-go/kittyimg"
+	"github.com/mattn/go-isatty"
 )
 
 func main() {
@@ -29,6 +30,14 @@ func main() {
 }
 
 func _main() error {
+	if (len(os.Args) == 1 || os.Args[1] == "-") && !isatty.IsTerminal(os.Stdin.Fd()) {
+		img, _, err := image.Decode(os.Stdin)
+		if err != nil {
+			return err
+		}
+		return kittyimg.Fprintln(os.Stdout, img)
+	}
+
 	for _, file := range os.Args[1:] {
 		img, err := readImageFile(file)
 		if err != nil {
