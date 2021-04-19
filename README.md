@@ -10,6 +10,20 @@
 
 A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg/) (`Fprint`, `Fprintln`) allows to display an image (loaded with stdlib's [image](https://golang.org/pkg/image/) package) at the cursor position.
 
+```
+go get github.com/dolmen-go/kittyimg
+```
+
+A command-line tool (`icat`) is provided.
+
+```
+go install github.com/dolmen-go/kittyimg/cmd/icat
+```
+
+## See also
+
+The Go Playground has [support for displaying images](https://play.golang.org/p/LXmxkAV0z_M) with its own protocol (`IMAGE:` prefix followed by base64 image file data).
+
 ## License
 
 Copyright 2021 Olivier Mengué
