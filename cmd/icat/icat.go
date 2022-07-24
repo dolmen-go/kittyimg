@@ -31,7 +31,7 @@ import (
 	_ "image/png"
 
 	"github.com/dolmen-go/kittyimg"
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 }
 
 func _main() error {
-	if (len(os.Args) == 1 || os.Args[1] == "-") && !isatty.IsTerminal(os.Stdin.Fd()) {
+	if (len(os.Args) == 1 || os.Args[1] == "-") && !term.IsTerminal(int(os.Stdin.Fd())) {
 		img, _, err := image.Decode(os.Stdin)
 		if err != nil {
 			return err
