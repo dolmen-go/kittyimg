@@ -1,8 +1,22 @@
-// icat
+// icat - Print images in kitty terminal emulator
+//
+// Usage
+//
+//    icat < file.png
+//    icat file.png [file.png [...]]
+//
+// Install with Go 1.16+
+//
+//    go get github.com/dolmen-go/kittyimg/cmd/icat@latest
+//
+// Description
 //
 //    icat kitty.png
+//
 // is equivalent to:
+//
 //    kitty icat --transfer-mode=stream --align=left kitty.png
+//
 package main
 
 import (
