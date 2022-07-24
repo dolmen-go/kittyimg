@@ -24,6 +24,9 @@ go install github.com/dolmen-go/kittyimg/cmd/icat
 
 The Go Playground has [support for displaying images](https://play.golang.org/p/LXmxkAV0z_M) with its own protocol (`IMAGE:` prefix followed by base64 image file data).
 
+tycat: https://git.enlightenment.org/apps/terminology.git/tree/src/bin/tycat.c
+Similar tool, but for the Enlightenment Terminology app (which uses a different terminal protocol).
+
 ## License
 
 Copyright 2021 Olivier Mengué
