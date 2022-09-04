@@ -60,7 +60,7 @@ func (spw *streamPayload) Write(b []byte) (n int, err error) {
 	return
 }
 
-// Close closes the Writer, flushing any unwritten data to the underlying io.Writer, but does not close the underlying io.Writer.
+// Close closes the writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
 func (spw *streamPayload) Close() (err error) {
 	if spw.n == 0 {
 		_, err = spw.w.Write([]byte("m=0;\033\\"))
@@ -78,7 +78,7 @@ func (spw *streamPayload) Close() (err error) {
 	return
 }
 
-// zlibPayload is an io.WriteCloser.
+// zlibPayload is an [io.WriteCloser].
 // https://sw.kovidgoyal.net/kitty/graphics-protocol.html#compression
 type zlibPayload struct {
 	buffer [16384]byte
@@ -111,7 +111,7 @@ func (zp *zlibPayload) Write(b []byte) (n int, err error) {
 	return
 }
 
-// Close closes the Writer, flushing any unwritten data to the underlying io.Writer, but does not close the underlying io.Writer.
+// Close closes the Writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
 func (zp *zlibPayload) Close() error {
 	if zp.n > 0 {
 		if _, err := zp.zw.Write(zp.buffer[:zp.n]); err != nil {
