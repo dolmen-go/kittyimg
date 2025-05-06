@@ -20,8 +20,8 @@ func Fprint(w io.Writer, img image.Image) error {
 
 	buf := make([]byte, 0, 16384) // Multiple of 4 (RGBA)
 
-	// var p streamPayload
-	var p zlibPayload
+	// var p payloadWriter
+	var p zlibPayloadWriter
 	p.Reset(w)
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {

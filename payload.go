@@ -79,33 +79,33 @@ func (pw *payloadWriter) Close() (err error) {
 	return
 }
 
-// zlibPayload is an [io.WriteCloser].
+// zlibPayloadWriter is an [io.WriteCloser] that adds a [compress/zlib] layer over [payloadWriter].
 // https://sw.kovidgoyal.net/kitty/graphics-protocol.html#compression
-type zlibPayload struct {
+type zlibPayloadWriter struct {
 	buffer [16384]byte
 	n      int
 	pw     payloadWriter
 	zw     *zlib.Writer
 }
 
-func (zp *zlibPayload) Reset(w io.Writer) {
+func (zpw *zlibPayloadWriter) Reset(w io.Writer) {
 	_, _ = w.Write([]byte("o=z,"))
-	zp.pw.Reset(w)
-	zp.zw = zlib.NewWriter(&zp.pw)
-	zp.n = 0
+	zpw.pw.Reset(w)
+	zpw.zw = zlib.NewWriter(&zpw.pw)
+	zpw.n = 0
 }
 
-func (zp *zlibPayload) Write(b []byte) (n int, err error) {
+func (zpw *zlibPayloadWriter) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
-		if zp.n == cap(zp.buffer) {
-			_, err = zp.zw.Write(zp.buffer[:])
+		if zpw.n == cap(zpw.buffer) {
+			_, err = zpw.zw.Write(zpw.buffer[:])
 			if err != nil {
 				return
 			}
-			zp.n = 0
+			zpw.n = 0
 		}
-		m := copy(zp.buffer[zp.n:], b)
-		zp.n += m
+		m := copy(zpw.buffer[zpw.n:], b)
+		zpw.n += m
 		n += m
 		b = b[m:]
 	}
@@ -113,7 +113,7 @@ func (zp *zlibPayload) Write(b []byte) (n int, err error) {
 }
 
 // Close closes the Writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
-func (zp *zlibPayload) Close() error {
+func (zp *zlibPayloadWriter) Close() error {
 	if zp.n > 0 {
 		if _, err := zp.zw.Write(zp.buffer[:zp.n]); err != nil {
 			return err
