@@ -12,48 +12,49 @@ const (
 	chunkRawSize = (chunkEncSize / 4) * 3
 )
 
-// streamPayload is an io.WriteCloser that encodes the payload data in the stream.
+// payloadWriter is an [io.WriteCloser] that encodes the payload binary data in the stream.
+// It handles encoding to base64 and 4096 characters chunking.
 // https://sw.kovidgoyal.net/kitty/graphics-protocol.html#remote-client
-type streamPayload struct {
+type payloadWriter struct {
 	bufEnc [chunkEncSize]byte
 	bufRaw [chunkRawSize]byte
 	n      int
 	w      io.Writer
 }
 
-func (spw *streamPayload) Reset(w io.Writer) {
-	spw.w = w
-	spw.n = 0
+func (pw *payloadWriter) Reset(w io.Writer) {
+	pw.w = w
+	pw.n = 0
 }
 
-func (spw *streamPayload) encode() error {
+func (pw *payloadWriter) encode() error {
 	// fmt.Fprintln(os.Stderr, len(bufRaw), "=>", (len(bufRaw)+2)/3*4)
 
-	base64.StdEncoding.Encode(spw.bufEnc[:], spw.bufRaw[:spw.n])
-	_, err := spw.w.Write(spw.bufEnc[:(spw.n+2)/3*4])
-	spw.n = 0
+	base64.StdEncoding.Encode(pw.bufEnc[:], pw.bufRaw[:pw.n])
+	_, err := pw.w.Write(pw.bufEnc[:(pw.n+2)/3*4])
+	pw.n = 0
 	return err
 }
 
-func (spw *streamPayload) Write(b []byte) (n int, err error) {
+func (pw *payloadWriter) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
-		if spw.n == cap(spw.bufRaw) {
-			_, err = spw.w.Write([]byte("m=1;"))
+		if pw.n == cap(pw.bufRaw) {
+			_, err = pw.w.Write([]byte("m=1;"))
 			if err != nil {
 				return
 			}
-			err = spw.encode()
+			err = pw.encode()
 			if err != nil {
 				return
 			}
-			_, err = spw.w.Write([]byte("\033\\\033_G"))
+			_, err = pw.w.Write([]byte("\033\\\033_G"))
 			if err != nil {
 				return
 			}
 		}
 
-		l := copy(spw.bufRaw[spw.n:], b)
-		spw.n += l
+		l := copy(pw.bufRaw[pw.n:], b)
+		pw.n += l
 		n += l
 		b = b[l:]
 	}
@@ -61,20 +62,20 @@ func (spw *streamPayload) Write(b []byte) (n int, err error) {
 }
 
 // Close closes the writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
-func (spw *streamPayload) Close() (err error) {
-	if spw.n == 0 {
-		_, err = spw.w.Write([]byte("m=0;\033\\"))
+func (pw *payloadWriter) Close() (err error) {
+	if pw.n == 0 {
+		_, err = pw.w.Write([]byte("m=0;\033\\"))
 		return
 	}
-	_, err = spw.w.Write([]byte("m=0;"))
+	_, err = pw.w.Write([]byte("m=0;"))
 	if err != nil {
 		return
 	}
-	err = spw.encode()
+	err = pw.encode()
 	if err != nil {
 		return
 	}
-	_, err = spw.w.Write([]byte("\033\\"))
+	_, err = pw.w.Write([]byte("\033\\"))
 	return
 }
 
@@ -83,14 +84,14 @@ func (spw *streamPayload) Close() (err error) {
 type zlibPayload struct {
 	buffer [16384]byte
 	n      int
-	spw    streamPayload
+	pw     payloadWriter
 	zw     *zlib.Writer
 }
 
 func (zp *zlibPayload) Reset(w io.Writer) {
 	_, _ = w.Write([]byte("o=z,"))
-	zp.spw.Reset(w)
-	zp.zw = zlib.NewWriter(&zp.spw)
+	zp.pw.Reset(w)
+	zp.zw = zlib.NewWriter(&zp.pw)
 	zp.n = 0
 }
 
@@ -121,5 +122,5 @@ func (zp *zlibPayload) Close() error {
 	if err := zp.zw.Close(); err != nil {
 		return err
 	}
-	return zp.spw.Close()
+	return zp.pw.Close()
 }
