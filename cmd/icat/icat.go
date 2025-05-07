@@ -53,7 +53,7 @@ func _main() error {
 
 	for _, file := range os.Args[1:] {
 		err := (func(file string) error {
-			f, err := os.Open(os.Args[1])
+			f, err := os.Open(file)
 			if err != nil {
 				return err
 			}
