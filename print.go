@@ -4,6 +4,7 @@
 package kittyimg
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"io"
@@ -53,5 +54,52 @@ func Fprintln(w io.Writer, img image.Image) error {
 		return err
 	}
 	_, err = w.Write([]byte{'\n'})
+	return err
+}
+
+// Transcode transforms the image file into the Kitty protocol representation for display
+// on a terminal.
+//
+// The supported input image formats depend on the formats registered with the [image]
+// framework (see [image/png], [image/gif], [image/jpeg]).
+func Transcode(w io.Writer, r io.Reader) error {
+	var buf bytes.Buffer
+	in := io.TeeReader(r, &buf)
+	cfg, format, err := image.DecodeConfig(in)
+	if err != nil {
+		return readError(r, err)
+	}
+	// Restart from byte 0
+	in = io.MultiReader(&buf, r)
+
+	// For PNG we send the raw file that probably has better compression
+	// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
+	if format == "png" {
+		if _, err = fmt.Fprintf(w, "\033_Gq=1,a=T,f=100,s=%d,v=%d,", cfg.Width, cfg.Height); err != nil {
+			return err
+		}
+
+		var pw writers.PayloadWriter
+		pw.Reset(w)
+
+		if _, err = io.Copy(&pw, in); err != nil {
+			return err
+		}
+		return pw.Close()
+	}
+
+	img, _, err := image.Decode(in)
+	if err != nil {
+		return readError(r, err)
+	}
+	return Fprint(w, img)
+}
+
+func readError(r io.Reader, err error) error {
+	if r, ok := r.(interface{ Name() string }); ok {
+		if name := r.Name(); name != "" {
+			return fmt.Errorf("%s: %w", r.Name(), err)
+		}
+	}
 	return err
 }
