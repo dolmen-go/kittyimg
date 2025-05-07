@@ -75,7 +75,7 @@ func _main() error {
 func transcode(r io.Reader, w io.Writer) error {
 	var buf bytes.Buffer
 	in := io.TeeReader(r, &buf)
-	_, format, err := image.DecodeConfig(in)
+	cfg, format, err := image.DecodeConfig(in)
 	if err != nil {
 		return readError(r, err)
 	}
@@ -85,7 +85,7 @@ func transcode(r io.Reader, w io.Writer) error {
 	// For PNG we send the raw file that probably has better compression
 	// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
 	if format == "png" {
-		if _, err = io.WriteString(w, "\033_Gq=1,a=T,f=100,"); err != nil {
+		if _, err = fmt.Fprintf(w, "\033_Gq=1,a=T,f=100,s=%d,v=%d,", cfg.Width, cfg.Height); err != nil {
 			return err
 		}
 
