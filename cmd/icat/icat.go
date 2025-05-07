@@ -44,44 +44,44 @@ func main() {
 
 func _main() error {
 	if (len(os.Args) == 1 || os.Args[1] == "-") && !term.IsTerminal(int(os.Stdin.Fd())) {
-		img, _, err := image.Decode(os.Stdin)
-		if err != nil {
-			return err
-		}
-		return kittyimg.Fprintln(os.Stdout, img)
+		return transcode(os.Stdin, os.Stdout)
 	}
 
 	for _, file := range os.Args[1:] {
-		img, err := readImageFile(file)
-		if err != nil {
-			return fmt.Errorf("%s: %w", file, err)
-		}
+		err := (func(file string) error {
+			f, err := os.Open(os.Args[1])
+			if err != nil {
+				return err
+			}
+			defer f.Close()
 
-		// icat(os.Stdout, img)
-		// fmt.Println()
-
-		err = kittyimg.Fprintln(os.Stdout, img)
+			return transcode(f, os.Stdout)
+		})(file)
 		if err != nil {
 			return err
 		}
+		os.Stdout.WriteString("\n")
 	}
 
 	return nil
 }
 
-func readImageFile(path string) (image.Image, error) {
-	f, err := os.Open(os.Args[1])
+func transcode(r io.Reader, w io.Writer) error {
+	img, _, err := image.Decode(r)
 	if err != nil {
-		return nil, err
+		return readError(r, err)
 	}
-	defer f.Close()
+	// return icat(w, img)
+	return kittyimg.Fprint(w, img)
+}
 
-	img, _, err := image.Decode(f)
-	if err != nil {
-		return nil, err
+func readError(r io.Reader, err error) error {
+	if r, ok := r.(interface{ Name() string }); ok {
+		if name := r.Name(); name != "" {
+			return fmt.Errorf("%s: %w", r.Name(), err)
+		}
 	}
-
-	return img, nil
+	return err
 }
 
 func icat(w io.Writer, img image.Image) {
