@@ -11,13 +11,13 @@
 A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg/) (`Fprint`, `Fprintln`) allows to display an image (loaded with stdlib's [image](https://golang.org/pkg/image/) package) at the cursor position.
 
 ```
-go get github.com/dolmen-go/kittyimg
+go get github.com/dolmen-go/kittyimg@latest
 ```
 
 A command-line tool (`icat`) is provided.
 
 ```
-go install github.com/dolmen-go/kittyimg/cmd/icat
+go install github.com/dolmen-go/kittyimg/cmd/icat@latest
 ```
 
 ## See also
