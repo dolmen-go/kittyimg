@@ -15,7 +15,7 @@
 //
 // is equivalent to:
 //
-//	kitty icat --transfer-mode=stream --align=left kitty.png
+//	kitten icat --transfer-mode=stream --align=left kitty.png
 package main
 
 import (
