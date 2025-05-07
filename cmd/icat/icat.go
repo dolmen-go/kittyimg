@@ -19,6 +19,9 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"image"
 	"io"
@@ -70,8 +73,37 @@ func _main() error {
 	return nil
 }
 
+var pngHeader = [8]byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}
+
 func transcode(r io.Reader, w io.Writer) error {
-	img, _, err := image.Decode(r)
+	in := bufio.NewReader(r)
+	header, err := in.Peek(8)
+	if err != nil {
+		return readError(r, err)
+	}
+	if bytes.Equal(header, pngHeader[:]) {
+		// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
+		if _, err = io.WriteString(w, "\033_Gq=1,a=T,f=100,"); err != nil {
+			return err
+		}
+
+		// FIXME chunk. See payloadWriter
+		if _, err = io.WriteString(w, "m=0;"); err != nil {
+			return err
+		}
+
+		enc := base64.NewEncoder(base64.StdEncoding, w)
+		if _, err = io.Copy(enc, in); err != nil {
+			return err
+		}
+		if err = enc.Close(); err != nil {
+			return err
+		}
+		_, err = io.WriteString(w, "\033\\")
+		return err
+	}
+
+	img, _, err := image.Decode(in)
 	if err != nil {
 		return readError(r, err)
 	}
