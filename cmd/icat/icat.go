@@ -19,7 +19,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"image"
@@ -73,16 +72,19 @@ func _main() error {
 	return nil
 }
 
-var pngHeader = [8]byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'}
-
 func transcode(r io.Reader, w io.Writer) error {
-	in := bufio.NewReader(r)
-	header, err := in.Peek(8)
+	var buf bytes.Buffer
+	in := io.TeeReader(r, &buf)
+	_, format, err := image.DecodeConfig(in)
 	if err != nil {
 		return readError(r, err)
 	}
-	if bytes.Equal(header, pngHeader[:]) {
-		// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
+	// Restart from byte 0
+	in = io.MultiReader(&buf, r)
+
+	// For PNG we send the raw file that probably has better compression
+	// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
+	if format == "png" {
 		if _, err = io.WriteString(w, "\033_Gq=1,a=T,f=100,"); err != nil {
 			return err
 		}
