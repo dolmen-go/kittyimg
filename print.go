@@ -20,7 +20,7 @@ func Fprint(w io.Writer, img image.Image) error {
 		return err
 	}
 
-	buf := make([]byte, 0, 16384) // Multiple of 4 (RGBA)
+	buf := make([]byte, 0, min(bounds.Dx()*bounds.Dy()*4, 16384)) // Multiple of 4 (RGBA)
 
 	// var p payloadWriter
 	var p writers.ZlibPayloadWriter
