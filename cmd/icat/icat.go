@@ -44,7 +44,11 @@ func main() {
 
 func _main() error {
 	if (len(os.Args) == 1 || os.Args[1] == "-") && !term.IsTerminal(int(os.Stdin.Fd())) {
-		return transcode(os.Stdin, os.Stdout)
+		if err := transcode(os.Stdin, os.Stdout); err != nil {
+			return err
+		}
+		os.Stdout.WriteString("\n")
+		return nil
 	}
 
 	for _, file := range os.Args[1:] {
