@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"image"
 	"io"
+
+	"github.com/dolmen-go/kittyimg/internal/writers"
 )
 
 func Fprint(w io.Writer, img image.Image) error {
@@ -21,7 +23,7 @@ func Fprint(w io.Writer, img image.Image) error {
 	buf := make([]byte, 0, 16384) // Multiple of 4 (RGBA)
 
 	// var p payloadWriter
-	var p zlibPayloadWriter
+	var p writers.ZlibPayloadWriter
 	p.Reset(w)
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
