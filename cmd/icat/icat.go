@@ -21,7 +21,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/base64"
 	"fmt"
 	"image"
 	"io"
@@ -31,9 +30,10 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
+	"golang.org/x/term"
+
 	"github.com/dolmen-go/kittyimg"
 	"github.com/dolmen-go/kittyimg/internal/writers"
-	"golang.org/x/term"
 )
 
 func main() {
@@ -87,20 +87,13 @@ func transcode(r io.Reader, w io.Writer) error {
 			return err
 		}
 
-		// FIXME chunk. See payloadWriter
-		if _, err = io.WriteString(w, "m=0;"); err != nil {
-			return err
-		}
+		var pw writers.PayloadWriter
+		pw.Reset(w)
 
-		enc := base64.NewEncoder(base64.StdEncoding, w)
-		if _, err = io.Copy(enc, in); err != nil {
+		if _, err = io.Copy(&pw, in); err != nil {
 			return err
 		}
-		if err = enc.Close(); err != nil {
-			return err
-		}
-		_, err = io.WriteString(w, "\033\\")
-		return err
+		return pw.Close()
 	}
 
 	img, _, err := image.Decode(in)
