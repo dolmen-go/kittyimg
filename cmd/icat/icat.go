@@ -73,7 +73,7 @@ func _main() error {
 	return nil
 }
 
-var pngHeader = [8]byte{0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}
+var pngHeader = [8]byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'}
 
 func transcode(r io.Reader, w io.Writer) error {
 	in := bufio.NewReader(r)
