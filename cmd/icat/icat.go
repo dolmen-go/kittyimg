@@ -49,23 +49,23 @@ import (
 
 func main() {
 	var status int
-	if err := _main(); err != nil {
+	if err := _main(os.Stdout, os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		status = 1
 	}
 	os.Exit(status)
 }
 
-func _main() error {
-	if (len(os.Args) == 1 || os.Args[1] == "-") && !term.IsTerminal(int(os.Stdin.Fd())) {
-		if err := kittyimg.Transcode(os.Stdout, os.Stdin); err != nil {
+func _main(out *os.File, args []string) error {
+	if (len(args) == 0 || args[0] == "-") && !term.IsTerminal(int(os.Stdin.Fd())) {
+		if err := kittyimg.Transcode(out, os.Stdin); err != nil {
 			return err
 		}
-		os.Stdout.WriteString("\n")
+		out.WriteString("\n")
 		return nil
 	}
 
-	for _, file := range os.Args[1:] {
+	for _, file := range args {
 		err := (func(file string) error {
 			f, err := os.Open(file)
 			if err != nil {
@@ -73,12 +73,12 @@ func _main() error {
 			}
 			defer f.Close()
 
-			return kittyimg.Transcode(os.Stdout, f)
+			return kittyimg.Transcode(out, f)
 		})(file)
 		if err != nil {
 			return err
 		}
-		os.Stdout.WriteString("\n")
+		out.WriteString("\n")
 	}
 
 	return nil
