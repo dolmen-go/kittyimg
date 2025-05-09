@@ -10,24 +10,30 @@
 
 ## Status
 
-A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg/) (`Fprint`, `Fprintln`) allows to display an image (loaded with stdlib's [image](https://golang.org/pkg/image/) package) at the cursor position.
+A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg) (`Fprint`, `Fprintln`, `Transcode`) allows to display an image (loaded with stdlib's [image](https://pkg.go.dev/image) package) at the cursor position.
 
 ```
 go get github.com/dolmen-go/kittyimg@latest
 ```
 
-A command-line tool (`icat`) is provided.
+A command-line tool ([`icat`](https://pkg.go.dev/github.com/dolmen-go/kittyimg/cmd/icat)) is provided.
 
 ```
 go install github.com/dolmen-go/kittyimg/cmd/icat@latest
 ```
 
+`icat <image>` works the same as [Kitty's command](https://sw.kovidgoyal.net/kitty/kittens/icat/) `kitten icat --transfer-mode=stream --align=left <image>`.
+
 ## See also
 
-The Go Playground has [support for displaying images](https://play.golang.org/p/LXmxkAV0z_M) with its own protocol (`IMAGE:` prefix followed by base64 image file data).
+The [Go Playground](https://go.dev/play) has [support for displaying images](https://play.golang.org/p/LXmxkAV0z_M) with its own protocol: `IMAGE:` prefix followed by base64 image file data.
 
-tycat: https://git.enlightenment.org/apps/terminology.git/tree/src/bin/tycat.c
-Similar tool, but for the Enlightenment Terminology app (which uses a different terminal protocol).
+Display tools for images on terminals:
+* [tycat](https://git.enlightenment.org/apps/terminology.git/tree/src/bin/tycat.c):
+Similar tool to `icat`, but for the Enlightenment Terminology app (which uses a different terminal protocol).
+* [timg](https://github.com/hzeller/timg)
+* [viu](https://github.com/atanunq/viu)
+* [chafa](https://hpjansson.org/chafa/)
 
 ## License
 
