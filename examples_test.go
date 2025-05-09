@@ -3,8 +3,11 @@ package kittyimg_test
 import (
 	"embed"
 	"image"
+	"io"
 	"os"
+	"strings"
 	"testing"
+	"time"
 
 	// Plugin to decode GIF
 	_ "image/gif"
@@ -30,10 +33,6 @@ func Example() {
 	kittyimg.Fprintln(os.Stdout, img)
 }
 
-func TestExample(*testing.T) {
-	Example()
-}
-
 func ExampleTranscode() {
 	f, err := files.Open("dolmen.gif")
 	if err != nil {
@@ -45,6 +44,46 @@ func ExampleTranscode() {
 	os.Stdout.WriteString("\n")
 }
 
-func TestExampleTranscode(*testing.T) {
-	ExampleTranscode()
+func captureExampleOutput(t *testing.T, name string, example func()) string {
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatal("pipe:", err)
+	}
+	done := make(chan string)
+	go func() {
+		defer r.Close()
+		var buf strings.Builder
+		_, err = io.Copy(&buf, r)
+		done <- buf.String()
+	}()
+	t.Run(name, func(t *testing.T) {
+		origStdout := os.Stdout
+		os.Stdout = w
+		time.Sleep(100 * time.Microsecond)
+		t.Cleanup(func() {
+			os.Stdout = origStdout
+			w.Close()
+		})
+		example()
+	})
+	out := <-done
+	if err != nil { // Report copy error
+		// t.Logf("%T %T", err, errors.Unwrap(err))
+		t.Log("copy error:", err)
+	}
+	return out
+}
+
+func TestExample(t *testing.T) {
+	out := captureExampleOutput(t, "Example", Example)
+	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z,m=0;eJzsndGt") {
+		t.Fatalf("unexpected output: %q", out)
+	}
+}
+
+func TestExampleTranscode(t *testing.T) {
+	out := captureExampleOutput(t, "ExampleTranscode", ExampleTranscode)
+	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z,m=0;eJzsndGt") {
+		t.Fatalf("unexpected output: %q", out)
+	}
 }
