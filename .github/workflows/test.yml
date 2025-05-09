@@ -1,0 +1,50 @@
+---
+name: Test
+on: [ push, pull_request ]
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version:
+          - stable
+          - oldstable
+        os:
+          - ubuntu-latest
+        #  - macos-latest
+        #arch:
+        #  - amd64
+        #  - ppc64le
+        #  - s390x
+        #  - arm64
+    runs-on: ${{ matrix.os }}
+    env:
+      GOPATH: ${{ github.workspace }}
+      GO111MODULE: on
+    defaults:
+      run:
+        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+    steps:
+      # https://github.com/mvdan/github-actions-golang
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          # https://github.com/actions/setup-go?tab=readme-ov-file#caching-dependency-files-and-build-outputs
+          cache-dependency-path: |
+            ${{ env.GOPATH }}/src/github.com/${{ github.repository }}/go.sum
+      - name: Fetch dependencies
+        run: go mod download
+      - name: Test
+        run: go test -v -covermode=atomic -coverprofile=coverage.out
+      - name: Upload coverage to Codecov.io
+        # https://github.com/codecov/codecov-action
+        # https://docs.codecov.com/docs/quick-start
+        uses: codecov/codecov-action@v5
+        with:
+          # https://app.codecov.io/gh/dolmen-go/kittyimg/settings
+          # https://github.com/dolmen-go/kittyimg/settings/secrets/actions
+          token: ${{ secrets.CODECOV_TOKEN }}
