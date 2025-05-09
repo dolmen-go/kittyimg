@@ -2,13 +2,14 @@
 
 `kittyimg` is a Go library that allows to display images in terminal emulators implementing [kitty's *terminal graphics protocol*](https://sw.kovidgoyal.net/kitty/graphics-protocol.html).
 
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/dolmen-go/kittyimg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/kittyimg)](https://goreportcard.com/report/github.com/dolmen-go/kittyimg)
 <!--
 [![Travis-CI](https://api.travis-ci.org/dolmen-go/kittyimg.svg?branch=master)](https://travis-ci.org/dolmen-go/kittyimg)
 [![Codecov](https://img.shields.io/codecov/c/github/dolmen-go/kittyimg/master.svg)](https://codecov.io/gh/dolmen-go/kittyimg/branch/master)
 -->
-[![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/kittyimg)](https://goreportcard.com/report/github.com/dolmen-go/kittyimg)
 
-## Status
+## ✨ Features
 
 A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg) (`Fprint`, `Fprintln`, `Transcode`) allows to display an image (loaded with stdlib's [image](https://pkg.go.dev/image) package) at the cursor position.
 
@@ -24,7 +25,11 @@ go install github.com/dolmen-go/kittyimg/cmd/icat@latest
 
 `icat <image>` works the same as [Kitty's command](https://sw.kovidgoyal.net/kitty/kittens/icat/) `kitten icat --transfer-mode=stream --align=left <image>`.
 
-## See also
+## 🏗️ Status
+
+Production ready.
+
+## 🔄 See also
 
 The [Go Playground](https://go.dev/play) has [support for displaying images](https://play.golang.org/p/LXmxkAV0z_M) with its own protocol: `IMAGE:` prefix followed by base64 image file data.
 
@@ -35,7 +40,7 @@ Similar tool to `icat`, but for the Enlightenment Terminology app (which uses a 
 * [viu](https://github.com/atanunq/viu)
 * [chafa](https://hpjansson.org/chafa/)
 
-## License
+## 🛡️ License
 
 Copyright 2021-2025 Olivier Mengué
 
