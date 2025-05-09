@@ -2,8 +2,10 @@
 
 `kittyimg` is a Go library that allows to display images in terminal emulators implementing [kitty's *terminal graphics protocol*](https://sw.kovidgoyal.net/kitty/graphics-protocol.html).
 
+<!--
 [![Travis-CI](https://api.travis-ci.org/dolmen-go/kittyimg.svg?branch=master)](https://travis-ci.org/dolmen-go/kittyimg)
 [![Codecov](https://img.shields.io/codecov/c/github/dolmen-go/kittyimg/master.svg)](https://codecov.io/gh/dolmen-go/kittyimg/branch/master)
+-->
 [![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/kittyimg)](https://goreportcard.com/report/github.com/dolmen-go/kittyimg)
 
 ## Status
