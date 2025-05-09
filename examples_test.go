@@ -33,3 +33,18 @@ func Example() {
 func TestExample(*testing.T) {
 	Example()
 }
+
+func ExampleTranscode() {
+	f, err := files.Open("dolmen.gif")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	kittyimg.Transcode(os.Stdout, f)
+	os.Stdout.WriteString("\n")
+}
+
+func TestExampleTranscode(*testing.T) {
+	ExampleTranscode()
+}
