@@ -37,7 +37,7 @@ Similar tool to `icat`, but for the Enlightenment Terminology app (which uses a 
 
 ## License
 
-Copyright 2021 Olivier Mengué
+Copyright 2021-2025 Olivier Mengué
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
