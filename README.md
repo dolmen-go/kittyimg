@@ -4,7 +4,7 @@
 
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/dolmen-go/kittyimg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/kittyimg)](https://goreportcard.com/report/github.com/dolmen-go/kittyimg)
-[![Codecov](https://img.shields.io/codecov/c/github/dolmen-go/kittyimg/master.svg)](https://codecov.io/gh/dolmen-go/kittyimg/branch/master)
+[![Codecov](https://img.shields.io/codecov/c/github/dolmen-go/kittyimg/main.svg)](https://codecov.io/gh/dolmen-go/kittyimg/branch/main)
 
 ## ✨ Features
 
