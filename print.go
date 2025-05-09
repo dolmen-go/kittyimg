@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"image"
 	"io"
-
-	"github.com/dolmen-go/kittyimg/internal/writers"
 )
 
 func Fprint(w io.Writer, img image.Image) error {
@@ -24,7 +22,7 @@ func Fprint(w io.Writer, img image.Image) error {
 	buf := make([]byte, 0, min(bounds.Dx()*bounds.Dy()*4, 16384)) // Multiple of 4 (RGBA)
 
 	// var p payloadWriter
-	var p writers.ZlibPayloadWriter
+	var p zlibPayloadWriter
 	p.Reset(w)
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
@@ -79,7 +77,7 @@ func Transcode(w io.Writer, r io.Reader) error {
 			return err
 		}
 
-		var pw writers.PayloadWriter
+		var pw payloadWriter
 		pw.Reset(w)
 
 		if _, err = io.Copy(&pw, in); err != nil {

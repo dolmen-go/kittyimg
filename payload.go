@@ -1,4 +1,4 @@
-package writers
+package kittyimg
 
 import (
 	"compress/zlib"
@@ -12,22 +12,22 @@ const (
 	chunkRawSize = (chunkEncSize / 4) * 3
 )
 
-// PayloadWriter is an [io.WriteCloser] that encodes the payload binary data in the stream.
+// payloadWriter is an [io.WriteCloser] that encodes the payload binary data in the stream.
 // It handles encoding to base64 and 4096 characters chunking.
 // https://sw.kovidgoyal.net/kitty/graphics-protocol.html#remote-client
-type PayloadWriter struct {
+type payloadWriter struct {
 	bufEnc [chunkEncSize]byte
 	bufRaw [chunkRawSize]byte
 	n      int
 	w      io.Writer
 }
 
-func (pw *PayloadWriter) Reset(w io.Writer) {
+func (pw *payloadWriter) Reset(w io.Writer) {
 	pw.w = w
 	pw.n = 0
 }
 
-func (pw *PayloadWriter) encode() error {
+func (pw *payloadWriter) encode() error {
 	// fmt.Fprintln(os.Stderr, len(bufRaw), "=>", (len(bufRaw)+2)/3*4)
 
 	base64.StdEncoding.Encode(pw.bufEnc[:], pw.bufRaw[:pw.n])
@@ -36,7 +36,7 @@ func (pw *PayloadWriter) encode() error {
 	return err
 }
 
-func (pw *PayloadWriter) Write(b []byte) (n int, err error) {
+func (pw *payloadWriter) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
 		if pw.n == cap(pw.bufRaw) {
 			_, err = pw.w.Write([]byte("m=1;"))
@@ -62,7 +62,7 @@ func (pw *PayloadWriter) Write(b []byte) (n int, err error) {
 }
 
 // Close closes the writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
-func (pw *PayloadWriter) Close() (err error) {
+func (pw *payloadWriter) Close() (err error) {
 	if pw.n == 0 {
 		_, err = pw.w.Write([]byte("m=0;\033\\"))
 		return
@@ -79,23 +79,23 @@ func (pw *PayloadWriter) Close() (err error) {
 	return
 }
 
-// ZlibPayloadWriter is an [io.WriteCloser] that adds a [compress/zlib] layer over [payloadWriter].
+// zlibPayloadWriter is an [io.WriteCloser] that adds a [compress/zlib] layer over [payloadWriter].
 // https://sw.kovidgoyal.net/kitty/graphics-protocol.html#compression
-type ZlibPayloadWriter struct {
+type zlibPayloadWriter struct {
 	buffer [16384]byte
 	n      int
-	pw     PayloadWriter
+	pw     payloadWriter
 	zw     *zlib.Writer
 }
 
-func (zpw *ZlibPayloadWriter) Reset(w io.Writer) {
+func (zpw *zlibPayloadWriter) Reset(w io.Writer) {
 	_, _ = w.Write([]byte("o=z,"))
 	zpw.pw.Reset(w)
 	zpw.zw = zlib.NewWriter(&zpw.pw)
 	zpw.n = 0
 }
 
-func (zpw *ZlibPayloadWriter) Write(b []byte) (n int, err error) {
+func (zpw *zlibPayloadWriter) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
 		if zpw.n == cap(zpw.buffer) {
 			_, err = zpw.zw.Write(zpw.buffer[:])
@@ -113,7 +113,7 @@ func (zpw *ZlibPayloadWriter) Write(b []byte) (n int, err error) {
 }
 
 // Close closes the Writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
-func (zp *ZlibPayloadWriter) Close() error {
+func (zp *zlibPayloadWriter) Close() error {
 	if zp.n > 0 {
 		if _, err := zp.zw.Write(zp.buffer[:zp.n]); err != nil {
 			return err
