@@ -23,7 +23,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 
 	// Plugin to decode GIF
 	_ "image/gif"
@@ -75,7 +74,6 @@ func captureExampleOutput(t *testing.T, name string, example func()) string {
 	t.Run(name, func(t *testing.T) {
 		origStdout := os.Stdout
 		os.Stdout = w
-		time.Sleep(100 * time.Microsecond)
 		t.Cleanup(func() {
 			os.Stdout = origStdout
 			w.Close()
@@ -85,7 +83,7 @@ func captureExampleOutput(t *testing.T, name string, example func()) string {
 	out := <-done
 	if err != nil { // Report copy error
 		// t.Logf("%T %T", err, errors.Unwrap(err))
-		t.Log("copy error:", err)
+		t.Error("copy error:", err)
 	}
 	return out
 }
