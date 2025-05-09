@@ -30,7 +30,7 @@ jobs:
       - name: Fetch dependencies
         run: go mod download
       - name: Test
-        run: go test -v -covermode=atomic -coverprofile=coverage.out
+        run: go test -v -covermode=atomic -coverprofile=coverage.out ./...
       - name: Upload coverage to Codecov.io
         # https://github.com/codecov/codecov-action
         # https://docs.codecov.com/docs/quick-start
