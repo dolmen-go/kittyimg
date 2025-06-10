@@ -18,14 +18,12 @@ package kittyimg_test
 
 import (
 	"bytes"
-	"embed"
 	"image"
 	"io"
 	"os"
 	"strings"
 	"testing"
 
-	_ "image/gif"
 	_ "image/png"
 
 	"github.com/dolmen-go/kittyimg"
@@ -62,20 +60,6 @@ func Example() {
 
 func ExampleTranscode_png() {
 	f := bytes.NewReader(favicon)
-
-	kittyimg.Transcode(os.Stdout, f)
-	os.Stdout.WriteString("\n")
-}
-
-//go:embed dolmen.gif
-var files embed.FS
-
-func ExampleTranscode_gif() {
-	f, err := files.Open("dolmen.gif")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
 
 	kittyimg.Transcode(os.Stdout, f)
 	os.Stdout.WriteString("\n")
@@ -123,14 +107,6 @@ func TestExampleTranscode_png(t *testing.T) {
 	t.Log(out)
 	// PNG file is directly transmitted
 	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=100,s=16,v=15,m=0;iVBORw0KGgoA") {
-		t.Fatalf("unexpected output: %q", out)
-	}
-}
-
-func TestExampleTranscode_gif(t *testing.T) {
-	out := captureExampleOutput(t, "ExampleTranscode_gif", ExampleTranscode_gif)
-	t.Log(out)
-	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z,m=0;eJzsndGt") {
 		t.Fatalf("unexpected output: %q", out)
 	}
 }
