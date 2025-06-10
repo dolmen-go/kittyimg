@@ -28,20 +28,14 @@ import (
 
 // Encoder is an [image.Image] encoder, like [image/png.Encoder].
 type Encoder struct {
-	_ [0]struct{}
+	pw  zlibPayloadWriter
+	buf []byte
 }
 
 // Encode [encodes] img and writes the result on w.
 //
 // [encodes]: https://sw.kovidgoyal.net/kitty/graphics-protocol/#display-images-on-screen
-func (*Encoder) Encode(w io.Writer, img image.Image) error {
-	return Fprint(w, img)
-}
-
-// Fprint [encodes] img and writes the result on w.
-//
-// [encodes]: https://sw.kovidgoyal.net/kitty/graphics-protocol/#display-images-on-screen
-func Fprint(w io.Writer, img image.Image) error {
+func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
 	bounds := img.Bounds()
 
 	// f=32 => RGBA
@@ -50,16 +44,21 @@ func Fprint(w io.Writer, img image.Image) error {
 		return err
 	}
 
-	buf := make([]byte, 0, min(bounds.Dx()*bounds.Dy()*4, 16384)) // Multiple of 4 (RGBA)
+	enc.pw.Reset(w)
 
-	// var p payloadWriter
-	var p zlibPayloadWriter
-	p.Reset(w)
+	bufCap := min(bounds.Dx()*bounds.Dy()*4, 16384) // Multiple of 4 (RGBA)
+	buf := enc.buf
+	if cap(enc.buf) < bufCap {
+		buf = make([]byte, 0, bufCap)
+		enc.buf = buf
+	} else {
+		buf = buf[:0]
+	}
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			if len(buf) == cap(buf) {
-				if _, err = p.Write(buf); err != nil {
+				if _, err = enc.pw.Write(buf); err != nil {
 					return err
 				}
 				buf = buf[:0]
@@ -71,10 +70,18 @@ func Fprint(w io.Writer, img image.Image) error {
 		}
 	}
 
-	if _, err = p.Write(buf); err != nil {
+	if _, err = enc.pw.Write(buf); err != nil {
 		return err
 	}
-	return p.Close()
+	return enc.pw.Close()
+}
+
+// Fprint [encodes] img and writes the result on w.
+//
+// [encodes]: https://sw.kovidgoyal.net/kitty/graphics-protocol/#display-images-on-screen
+func Fprint(w io.Writer, img image.Image) error {
+	var e Encoder
+	return e.Encode(w, img)
 }
 
 // Fprintln calls [Fprint], then writes '\n'.
