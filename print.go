@@ -99,7 +99,7 @@ func Fprintln(w io.Writer, img image.Image) error {
 //
 // The supported input image formats depend on the formats registered with the [image]
 // framework (see [image/png], [image/gif], [image/jpeg]).
-func Transcode(w io.Writer, r io.Reader) error {
+func (enc *Encoder) Transcode(w io.Writer, r io.Reader) error {
 	var buf bytes.Buffer
 	in := io.TeeReader(r, &buf)
 	cfg, format, err := image.DecodeConfig(in)
@@ -116,10 +116,10 @@ func Transcode(w io.Writer, r io.Reader) error {
 			return err
 		}
 
-		var pw payloadWriter
+		var pw *payloadWriter = &enc.pw.pw
 		pw.Reset(w)
 
-		if _, err = io.Copy(&pw, in); err != nil {
+		if _, err = io.Copy(pw, in); err != nil {
 			return err
 		}
 		return pw.Close()
@@ -129,7 +129,17 @@ func Transcode(w io.Writer, r io.Reader) error {
 	if err != nil {
 		return readError(r, err)
 	}
-	return Fprint(w, img)
+	return enc.Encode(w, img)
+}
+
+// Transcode transforms the image file into the Kitty protocol representation for display
+// on a terminal.
+//
+// The supported input image formats depend on the formats registered with the [image]
+// framework (see [image/png], [image/gif], [image/jpeg]).
+func Transcode(w io.Writer, r io.Reader) error {
+	var enc Encoder
+	return enc.Transcode(w, r)
 }
 
 func readError(r io.Reader, err error) error {
