@@ -65,6 +65,7 @@ func _main(out *os.File, args []string) error {
 		return nil
 	}
 
+	var enc kittyimg.Encoder
 	for _, file := range args {
 		err := (func(file string) error {
 			f, err := os.Open(file)
@@ -73,7 +74,7 @@ func _main(out *os.File, args []string) error {
 			}
 			defer f.Close()
 
-			return kittyimg.Transcode(out, f)
+			return enc.Transcode(out, f)
 		})(file)
 		if err != nil {
 			return err
