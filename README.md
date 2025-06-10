@@ -8,15 +8,18 @@
 
 ## ✨ Features
 
-A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg) (`Fprint`, `Fprintln`, `Transcode`) allows to display an image (loaded with stdlib's [image](https://pkg.go.dev/image) package) at the cursor position.
+A [basic API](https://pkg.go.dev/github.com/dolmen-go/kittyimg)
+([`Fprint`](https://pkg.go.dev/github.com/dolmen-go/kittyimg#Fprint),
+[`Fprintln`](https://pkg.go.dev/github.com/dolmen-go/kittyimg#Fprintln),
+[`Transcode`](https://pkg.go.dev/github.com/dolmen-go/kittyimg#Transcode)) allows to display an image (loaded with stdlib's [image](https://pkg.go.dev/image) package) at the cursor position.
 
-```
+```console
 go get github.com/dolmen-go/kittyimg@latest
 ```
 
 A command-line tool ([`icat`](https://pkg.go.dev/github.com/dolmen-go/kittyimg/cmd/icat)) is provided.
 
-```
+```console
 go install github.com/dolmen-go/kittyimg/cmd/icat@latest
 ```
 
