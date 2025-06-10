@@ -14,9 +14,9 @@
    limitations under the License.
 */
 
-// Package kittyimg provides utilities to show image in a graphic terminal emulator supporting kitty's "terminal graphics protocol".
+// Package kittyimg provides utilities to show image in a graphic terminal emulator supporting [kitty's "terminal graphics protocol"].
 //
-// See https://sw.kovidgoyal.net/kitty/graphics-protocol.html.
+// [kitty's "terminal graphics protocol"]: https://sw.kovidgoyal.net/kitty/graphics-protocol.html
 package kittyimg
 
 import (
@@ -26,6 +26,9 @@ import (
 	"io"
 )
 
+// Fprint [encodes] img and writes the result on w.
+//
+// [encodes]: https://sw.kovidgoyal.net/kitty/graphics-protocol/#display-images-on-screen
 func Fprint(w io.Writer, img image.Image) error {
 	bounds := img.Bounds()
 
@@ -62,6 +65,7 @@ func Fprint(w io.Writer, img image.Image) error {
 	return p.Close()
 }
 
+// Fprintln calls [Fprint], then writes '\n'.
 func Fprintln(w io.Writer, img image.Image) error {
 	err := Fprint(w, img)
 	if err != nil {
