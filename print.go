@@ -26,6 +26,18 @@ import (
 	"io"
 )
 
+// Encoder is an [image.Image] encoder, like [image/png.Encoder].
+type Encoder struct {
+	_ [0]struct{}
+}
+
+// Encode [encodes] img and writes the result on w.
+//
+// [encodes]: https://sw.kovidgoyal.net/kitty/graphics-protocol/#display-images-on-screen
+func (*Encoder) Encode(w io.Writer, img image.Image) error {
+	return Fprint(w, img)
+}
+
 // Fprint [encodes] img and writes the result on w.
 //
 // [encodes]: https://sw.kovidgoyal.net/kitty/graphics-protocol/#display-images-on-screen
