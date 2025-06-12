@@ -16,6 +16,15 @@ go-logo-blue.png: go-logo-blue.svg
 go-logo-blue.svg:
 	curl -O https://go.dev/images/go-logo-blue.svg
 
+favicon-gopher.png:
+	curl -O https://go.dev/images/favicon-gopher.png
+
+go-favicon.ico:
+	curl -o go-favicon.ico https://go.dev/favicon.ico
+
+go-favicon-0.png go-favicon-1.png: go-favicon.ico
+	magick $< go-favicon.png
+
 # Doesn't work: outputs zTXt instead of tEXt
 # magick $< -define PNG:text-type=text -set comment $$(perl -e 'print q[x] x (3072 - 20 - -s q[$@])') $@
 
