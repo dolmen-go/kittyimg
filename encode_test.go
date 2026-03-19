@@ -31,6 +31,14 @@ import (
 	"strings"
 	"testing"
 
+	// Note that we are not loading image/png while we have tests that process PNG files.
+	// The test are still passing because Transcode doesn't decode the PNG but instead just
+	// send the raw PNG file.
+	// This can be verified by looking at code coverage for image/png:
+	//   go test -coverpkg=image/png -run TestImage3072
+	//
+	// So do not add tests that require image/png in this file.
+
 	"github.com/dolmen-go/kittyimg"
 )
 
