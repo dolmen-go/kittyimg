@@ -27,6 +27,9 @@ import (
 )
 
 // Encoder is an [image.Image] encoder, like [image/png.Encoder].
+//
+// Using an Encoder explicitely allows to reuse resources (memory buffers) when encoding
+// multiple images sequentially.
 type Encoder struct {
 	pw  zlibPayloadWriter
 	buf []byte

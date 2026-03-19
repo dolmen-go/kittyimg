@@ -18,6 +18,7 @@ package kittyimg_test
 
 import (
 	"embed"
+	"image"
 	"os"
 	"strings"
 	"testing"
@@ -46,5 +47,28 @@ func TestExampleTranscode_gif(t *testing.T) {
 	t.Log(out)
 	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z;eJzsndGt") {
 		t.Fatalf("unexpected output: %q", out)
+	}
+}
+
+// Test reusing an Encoder to write multiple files.
+func TestEncoderMulti(t *testing.T) {
+	f, err := files.Open("dolmen.gif")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	img, _, err := image.Decode(f)
+	f.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var enc kittyimg.Encoder
+
+	for i := 0; i < 3; i++ {
+		t.Log("Image", i+1)
+		if err := enc.Encode(t.Output(), img); err != nil {
+			t.Error(err)
+		}
 	}
 }

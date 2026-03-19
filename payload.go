@@ -113,7 +113,11 @@ type zlibPayloadWriter struct {
 func (zpw *zlibPayloadWriter) Reset(w io.Writer) {
 	_, _ = w.Write([]byte(",o=z"))
 	zpw.pw.Reset(w)
-	zpw.zw = zlib.NewWriter(&zpw.pw)
+	if zpw.zw == nil {
+		zpw.zw = zlib.NewWriter(&zpw.pw)
+	} else {
+		zpw.zw.Reset(&zpw.pw)
+	}
 	zpw.n = 0
 }
 

@@ -57,11 +57,11 @@ func runMain(t *testing.T, name string, args ...string) (string, error) {
 }
 
 func Test(t *testing.T) {
-	out, err := runMain(t, "icat dolmen.gif", "../../dolmen.gif")
+	out, err := runMain(t, "icat dolmen.gif", "../../dolmen.gif", "../../dolmen.gif")
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(out)
+	t.Log("Output:\n" + out)
 	t.Logf("%q", out)
 	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z;eJzsndGt") ||
 		!strings.HasSuffix(out, "9yLYll\x1b\\\n") {
