@@ -36,11 +36,13 @@ type payloadWriter struct {
 	bufRaw [chunkRawSize]byte
 	n      int
 	w      io.Writer
+	ntFrst bool // not first:
 }
 
 func (pw *payloadWriter) Reset(w io.Writer) {
-	pw.w = w
 	pw.n = 0
+	pw.ntFrst = false
+	pw.w = w
 }
 
 func (pw *payloadWriter) encode() error {
@@ -55,6 +57,10 @@ func (pw *payloadWriter) encode() error {
 func (pw *payloadWriter) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
 		if pw.n == cap(pw.bufRaw) {
+			if !pw.ntFrst {
+				pw.w.Write([]byte{','})
+				pw.ntFrst = true
+			}
 			_, err = pw.w.Write([]byte("m=1;"))
 			if err != nil {
 				return
@@ -80,10 +86,10 @@ func (pw *payloadWriter) Write(b []byte) (n int, err error) {
 // Close closes the writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
 func (pw *payloadWriter) Close() (err error) {
 	if pw.n == 0 {
-		_, err = pw.w.Write([]byte("m=0;\033\\"))
+		_, err = pw.w.Write([]byte(";\033\\"))
 		return
 	}
-	_, err = pw.w.Write([]byte("m=0;"))
+	_, err = pw.w.Write([]byte{';'})
 	if err != nil {
 		return
 	}
@@ -105,7 +111,7 @@ type zlibPayloadWriter struct {
 }
 
 func (zpw *zlibPayloadWriter) Reset(w io.Writer) {
-	_, _ = w.Write([]byte("o=z,"))
+	_, _ = w.Write([]byte(",o=z"))
 	zpw.pw.Reset(w)
 	zpw.zw = zlib.NewWriter(&zpw.pw)
 	zpw.n = 0

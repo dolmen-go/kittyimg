@@ -97,7 +97,7 @@ func captureExampleOutput(t *testing.T, name string, example func()) string {
 func TestExample(t *testing.T) {
 	out := captureExampleOutput(t, "Example", Example)
 	t.Log(out)
-	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=16,v=15,t=d,o=z,m=0;eJz6+//Pfxi29A") {
+	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=16,v=15,t=d,o=z;eJz6+//Pfxi29A") {
 		t.Fatalf("unexpected output: %q", out)
 	}
 }
@@ -106,7 +106,7 @@ func TestExampleTranscode_png(t *testing.T) {
 	out := captureExampleOutput(t, "ExampleTranscode_png", ExampleTranscode_png)
 	t.Log(out)
 	// PNG file is directly transmitted
-	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=100,s=16,v=15,m=0;iVBORw0KGgoA") {
+	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=100,s=16,v=15;iVBORw0KGgoA") {
 		t.Fatalf("unexpected output: %q", out)
 	}
 }

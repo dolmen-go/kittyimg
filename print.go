@@ -39,7 +39,7 @@ func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
 	bounds := img.Bounds()
 
 	// f=32 => RGBA
-	_, err := fmt.Fprintf(w, "\033_Gq=1,a=T,f=32,s=%d,v=%d,t=d,", bounds.Dx(), bounds.Dy())
+	_, err := fmt.Fprintf(w, "\033_Gq=1,a=T,f=32,s=%d,v=%d,t=d", bounds.Dx(), bounds.Dy())
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (enc *Encoder) Transcode(w io.Writer, r io.Reader) error {
 	// For PNG we send the raw file that probably has better compression
 	// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
 	if format == "png" {
-		if _, err = fmt.Fprintf(w, "\033_Gq=1,a=T,f=100,s=%d,v=%d,", cfg.Width, cfg.Height); err != nil {
+		if _, err = fmt.Fprintf(w, "\033_Gq=1,a=T,f=100,s=%d,v=%d", cfg.Width, cfg.Height); err != nil {
 			return err
 		}
 
