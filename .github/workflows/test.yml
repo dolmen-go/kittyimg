@@ -69,3 +69,5 @@ jobs:
           # https://app.codecov.io/gh/dolmen-go/kittyimg/settings
           # https://github.com/dolmen-go/kittyimg/settings/secrets/actions
           token: ${{ secrets.CODECOV_TOKEN }}
+          # Ignore coverage for _tools/png-size.go
+          exclude: _tools
