@@ -173,6 +173,8 @@ func extractBlocks(s []byte) iter.Seq[*Block] {
 }
 
 func testDecode(t *testing.T, filepath string, expectedLen int) {
+	t.Parallel()
+
 	f, err := os.Open(filepath)
 	if err != nil {
 		t.Fatal(err)
