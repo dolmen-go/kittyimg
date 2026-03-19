@@ -2,9 +2,16 @@
 
 `kittyimg` is a Go library that allows to display images in terminal emulators implementing [kitty's *terminal graphics protocol*](https://sw.kovidgoyal.net/kitty/graphics-protocol.html).
 
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/dolmen-go/kittyimg)
+[![Go Reference](https://pkg.go.dev/badge/github.com/dolmen-go/kittyimg.svg)](https://pkg.go.dev/github.com/dolmen-go/kittyimg)
+[![CI](https://github.com/dolmen-go/kittyimg/actions/workflows/test.yml/badge.svg)](https://github.com/dolmen-go/kittyimg/actions)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dolmen-go_kittyimg&metric=coverage)](https://sonarcloud.io/summary/overall?id=dolmen-go_kittyimg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/kittyimg)](https://goreportcard.com/report/github.com/dolmen-go/kittyimg)
+
+
+<!--
 [![Codecov](https://img.shields.io/codecov/c/github/dolmen-go/kittyimg/main.svg)](https://codecov.io/gh/dolmen-go/kittyimg/branch/main)
+[![Codecov](https://codecov.io/gh/dolmen-go/kittyimg/graph/badge.svg?token=YpWZ0OBMUa)](https://app.codecov.io/gh/dolmen-go/kittyimg/branch/main)
+-->
 
 ## ✨ Features
 
