@@ -31,6 +31,9 @@ go-favicon-0.png go-favicon-1.png: go-favicon.ico
 go-favicon-3069.png: go-favicon-1.png
 	$(png-size) -size=3069 $< $@
 
+go-favicon-3070.png: go-favicon-1.png
+	$(png-size) -size=3070 $< $@
+
 go-favicon-3071.png: go-favicon-1.png
 	$(png-size) -size=3071 $< $@
 
