@@ -45,7 +45,7 @@ func runMain(t *testing.T, name string, args ...string) (string, error) {
 			w.Close()
 		})
 
-		mainErr = _main(w, args)
+		mainErr = icatMain(w, args)
 	})
 
 	out := <-done

@@ -49,14 +49,14 @@ import (
 
 func main() {
 	var status int
-	if err := _main(os.Stdout, os.Args[1:]); err != nil {
+	if err := icatMain(os.Stdout, os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		status = 1
 	}
 	os.Exit(status)
 }
 
-func _main(out *os.File, args []string) error {
+func icatMain(out *os.File, args []string) error {
 	if (len(args) == 0 || args[0] == "-") && !term.IsTerminal(int(os.Stdin.Fd())) {
 		if err := kittyimg.Transcode(out, os.Stdin); err != nil {
 			return err
