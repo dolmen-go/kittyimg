@@ -145,7 +145,7 @@ func Transcode(w io.Writer, r io.Reader) error {
 func readError(r io.Reader, err error) error {
 	if r, ok := r.(interface{ Name() string }); ok {
 		if name := r.Name(); name != "" {
-			return fmt.Errorf("%s: %w", r.Name(), err)
+			return fmt.Errorf("%s: %w", name, err)
 		}
 	}
 	return err
