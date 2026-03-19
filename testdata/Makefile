@@ -3,7 +3,7 @@ SHELL := bash
 .PHONY: all
 
 go := go
-png-size := $(go) run ../_tools/png-size.go
+png-grow := $(go) run ../_tools/png-grow.go
 
 all: go-logo-blue.png go-logo-blue-2.png
 
@@ -29,16 +29,16 @@ go-favicon-0.png go-favicon-1.png: go-favicon.ico
 # magick $< -define PNG:text-type=text -set comment $$(perl -e 'print q[x] x (3072 - 20 - -s q[$@])') $@
 
 go-favicon-3069.png: go-favicon-1.png
-	$(png-size) -size=3069 $< $@
+	$(png-grow) -size=3069 $< $@
 
 go-favicon-3070.png: go-favicon-1.png
-	$(png-size) -size=3070 $< $@
+	$(png-grow) -size=3070 $< $@
 
 go-favicon-3071.png: go-favicon-1.png
-	$(png-size) -size=3071 $< $@
+	$(png-grow) -size=3071 $< $@
 
 go-favicon-3072.png: go-favicon-1.png
-	$(png-size) -size=3072 $< $@
+	$(png-grow) -size=3072 $< $@
 
 go-favicon-3073.png: go-favicon-1.png
-	$(png-size) -size=3073 $< $@
+	$(png-grow) -size=3073 $< $@

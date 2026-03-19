@@ -1,8 +1,8 @@
 //go:build ignore
 
-// Command png-size adjusts the size of PNG file to reach a target size.
+// Command png-grow adjusts the size of PNG file to reach a target size.
 //
-// png-size injects a "tEXt" chunk (non-compressed text) of the appropriate length
+// png-grow injects a "tEXt" chunk (non-compressed text) of the appropriate length
 // to grow the file.
 package main
 
@@ -28,7 +28,7 @@ func main() {
 	flag.Parse()
 
 	if flag.NArg() != 2 {
-		fmt.Println("Usage: go run png-size.go -size=<target-size> <input.png> <output.png>")
+		fmt.Println("Usage: go run png-grow.go -size=<target-size> <input.png> <output.png>")
 		os.Exit(1)
 	}
 
