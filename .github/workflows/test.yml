@@ -1,5 +1,5 @@
 ---
-name: Test
+name: Test & Quality
 on: [ push, pull_request ]
 jobs:
   test:
@@ -20,17 +20,47 @@ jobs:
     env:
       GO111MODULE: on
     steps:
-      # https://github.com/mvdan/github-actions-golang
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
       - name: Fetch dependencies
         run: go mod download
       - name: Test
-        run: go test -v -covermode=atomic -coverprofile=coverage.out ./...
+        run: go test -v ./...
+
+  quality:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          # Default is 1 (shallow clone with a single commit)
+          # but SonarQube wants full history
+          fetch-depth: 0
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Test (JSON, for SonarQube)
+        # Powershell has issues with '=' in args
+        run: go test -json -covermode atomic -coverpkg ./... -coverprofile .coverage.out ./... >.gotest.out
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          # https://sonarcloud.io/project/configuration/GitHubActions?id=dolmen-go_kittyimg
+          # https://github.com/dolmen-go/kittyimg/settings/secrets/actions
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          # See also sonar-project.properties
+          args: >
+            -Dsonar.go.tests.reportPaths=.gotest.out
+            -Dsonar.go.coverage.reportPaths=.coverage.out
+
       - name: Upload coverage to Codecov.io
         # https://github.com/codecov/codecov-action
         # https://docs.codecov.com/docs/quick-start
