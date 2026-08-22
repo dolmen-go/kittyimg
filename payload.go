@@ -134,6 +134,7 @@ func (pw *payloadWriter) Close() (err error) {
 		}
 	}
 	_, err = pw.w.Write([]byte("\033\\"))
+	pw.w = nil // free the writer, and make the writer unusable until Reset is called.
 	return
 }
 
