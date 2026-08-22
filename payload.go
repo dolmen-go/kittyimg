@@ -118,12 +118,16 @@ func (pw *payloadWriter) Close() (err error) {
 		}
 		b = append(b, 'q', '=', '0'+pw.q)
 	}
-	b = append(b, ';')
-	_, err = pw.w.Write(b)
-	if err != nil {
-		return
+	if pw.n > 0 {
+		b = append(b, ';')
 	}
-	if pw.n != 0 {
+	if len(b) > 0 {
+		_, err = pw.w.Write(b)
+		if err != nil {
+			return
+		}
+	}
+	if pw.n > 0 {
 		err = pw.encode()
 		if err != nil {
 			return
