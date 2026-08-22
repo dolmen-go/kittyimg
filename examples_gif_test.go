@@ -45,7 +45,7 @@ func ExampleTranscode_gif() {
 func TestExampleTranscode_gif(t *testing.T) {
 	out := captureExampleOutput(t, "ExampleTranscode_gif", ExampleTranscode_gif)
 	t.Log(out)
-	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z;eJzsndGt") {
+	if !strings.HasPrefix(out, "\x1b_Ga=T,f=32,s=420,v=66,t=d,o=z,q=1;eJzsndGt") {
 		t.Fatalf("unexpected output: %q", out)
 	}
 }

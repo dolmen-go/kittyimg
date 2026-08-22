@@ -36,11 +36,14 @@ type payloadWriter struct {
 	bufRaw [chunkRawSize]byte
 	n      int
 	w      io.Writer
+	q      byte // quiet: 0, 1, 2
 	ntFrst bool // not first:
 }
 
-func (pw *payloadWriter) Reset(w io.Writer) {
+// Reset resets the writer to a clean state, with the given value for the "q" parameter.
+func (pw *payloadWriter) Reset(w io.Writer, q byte) {
 	pw.n = 0
+	pw.q = q
 	pw.ntFrst = false
 	pw.w = w
 }
@@ -57,11 +60,33 @@ func (pw *payloadWriter) encode() error {
 func (pw *payloadWriter) Write(b []byte) (n int, err error) {
 	for len(b) > 0 {
 		if pw.n == cap(pw.bufRaw) {
+			// First chunk, multichunks:
+			// ",m=1;" (q=0)
+			// ",m=1,q=1;"
+			// ",m=1,q=2;"
+			// Middle chunks:
+			// "m=1;" (q=0)
+			// "m=1,q=1;"
+			// "m=1,q=2;"
+			// Last chunk (see flush in Close):
+			// ";" (q=0)
+			// "q=1;"
+			// "q=2;"
+
 			if !pw.ntFrst {
 				pw.w.Write([]byte{','})
 				pw.ntFrst = true
 			}
-			_, err = pw.w.Write([]byte("m=1;"))
+			var tail []byte
+			switch pw.q {
+			case 1:
+				tail = []byte("m=1,q=1;")
+			case 2:
+				tail = []byte("m=1,q=2;")
+			default:
+				tail = []byte("m=1;")
+			}
+			_, err = pw.w.Write(tail)
 			if err != nil {
 				return
 			}
@@ -85,17 +110,24 @@ func (pw *payloadWriter) Write(b []byte) (n int, err error) {
 
 // Close closes the writer, flushing any unwritten data to the underlying [io.Writer], but does not close the underlying [io.Writer].
 func (pw *payloadWriter) Close() (err error) {
-	if pw.n == 0 {
-		_, err = pw.w.Write([]byte(";\033\\"))
-		return
+	var buf [5]byte
+	b := buf[:0]
+	if pw.q != 0 {
+		if !pw.ntFrst {
+			b = append(b, ',')
+		}
+		b = append(b, 'q', '=', '0'+pw.q)
 	}
-	_, err = pw.w.Write([]byte{';'})
+	b = append(b, ';')
+	_, err = pw.w.Write(b)
 	if err != nil {
 		return
 	}
-	err = pw.encode()
-	if err != nil {
-		return
+	if pw.n != 0 {
+		err = pw.encode()
+		if err != nil {
+			return
+		}
 	}
 	_, err = pw.w.Write([]byte("\033\\"))
 	return
@@ -110,9 +142,9 @@ type zlibPayloadWriter struct {
 	zw     *zlib.Writer
 }
 
-func (zpw *zlibPayloadWriter) Reset(w io.Writer) {
+func (zpw *zlibPayloadWriter) Reset(w io.Writer, q byte) {
 	_, _ = w.Write([]byte(",o=z"))
-	zpw.pw.Reset(w)
+	zpw.pw.Reset(w, q)
 	if zpw.zw == nil {
 		zpw.zw = zlib.NewWriter(&zpw.pw)
 	} else {

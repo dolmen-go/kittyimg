@@ -63,7 +63,7 @@ func Test(t *testing.T) {
 	}
 	t.Log("Output:\n" + out)
 	t.Logf("%q", out)
-	if !strings.HasPrefix(out, "\x1b_Gq=1,a=T,f=32,s=420,v=66,t=d,o=z;eJzsndGt") ||
+	if !strings.HasPrefix(out, "\x1b_Ga=T,f=32,s=420,v=66,t=d,o=z,q=1;eJzsndGt") ||
 		!strings.HasSuffix(out, "9yLYll\x1b\\\n") {
 		t.Error("unexpected output")
 	}

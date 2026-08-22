@@ -42,12 +42,12 @@ func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
 	bounds := img.Bounds()
 
 	// f=32 => RGBA
-	_, err := fmt.Fprintf(w, "\033_Gq=1,a=T,f=32,s=%d,v=%d,t=d", bounds.Dx(), bounds.Dy())
+	_, err := fmt.Fprintf(w, "\033_Ga=T,f=32,s=%d,v=%d,t=d", bounds.Dx(), bounds.Dy())
 	if err != nil {
 		return err
 	}
 
-	enc.pw.Reset(w)
+	enc.pw.Reset(w, 1)
 
 	bufCap := min(bounds.Dx()*bounds.Dy()*4, 16384) // Multiple of 4 (RGBA)
 	buf := enc.buf
@@ -115,12 +115,12 @@ func (enc *Encoder) Transcode(w io.Writer, r io.Reader) error {
 	// For PNG we send the raw file that probably has better compression
 	// https://sw.kovidgoyal.net/kitty/graphics-protocol/#png-data
 	if format == "png" {
-		if _, err = fmt.Fprintf(w, "\033_Gq=1,a=T,f=100,s=%d,v=%d", cfg.Width, cfg.Height); err != nil {
+		if _, err = fmt.Fprintf(w, "\033_Ga=T,f=100,s=%d,v=%d", cfg.Width, cfg.Height); err != nil {
 			return err
 		}
 
 		var pw *payloadWriter = &enc.pw.pw
-		pw.Reset(w)
+		pw.Reset(w, 1)
 
 		if _, err = io.Copy(pw, in); err != nil {
 			return err

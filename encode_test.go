@@ -232,5 +232,5 @@ func TestImagePNG3072(t *testing.T) {
 
 // Test encoding of a PNG image file of 3073 bytes, which is two blocks (3072+1 => 4096+4).
 func TestImagePNG3073(t *testing.T) {
-	testDecode(t, "testdata/go-favicon-3073.png", 4139)
+	testDecode(t, "testdata/go-favicon-3073.png", 4142)
 }
